@@ -53,8 +53,8 @@ countSameElements([H1|T1],[H2|T2],SetCount) :-
 % Count-------------------------------------------------
 count(_,[],0). % base case
 count(H,[H|T],C) :-
-    count(H,T,C1), % <-- I think its broke here!
-    C is C1 + 1.
+    count(H,T,C1),
+    C is C1 + 1 , !.
 count(H,[_|T],C) :-
     count(H,T,C).
 
