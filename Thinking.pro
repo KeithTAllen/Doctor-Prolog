@@ -1,9 +1,9 @@
-This is just a text document that I wanted to create to 
-    let me think a little bit before I hit the prolog.
+%This is just a text document that I wanted to create to
+%    let me think a little bit before I hit the prolog.
+%
+%Do this in the context of the four most common illnesses on cruise ships
 
-Do this in the context of the four most common illnesses on cruise ships 
-
-gastrointestinal issues 
+%gastrointestinal issues
 
 bloating/excess gas     
 constipation            
@@ -12,8 +12,8 @@ heartburn
 nausea/vomiting 
 abdominal pain 
 
-^^^^^^
-influenza
+%^^^^^^
+%influenza
 
 cough
 fatigue
@@ -24,8 +24,8 @@ aches and pains
 sore throat 
 vomiting (children)
 
-^^^^^^^^^^
-Legionnaires Disease 
+%^^^^^^^^^^
+%Legionnaires Disease
 
 cough 
 shortness of breath 
@@ -33,8 +33,8 @@ fever
 muscle aches 
 headaches
 
-^^^^^^^^^^^^^^^
-Hepatitis A 
+%^^^^^^^^^^^^^^^
+%Hepatitis A
 
 yellow skin/eyes
 loss of appetite 
@@ -46,7 +46,7 @@ dark urine
 joint pain
 fatigue 
 
-List of all symptoms 
+%List of all symptoms
 
 bloating/excess gas         (1)
 constipation                (1)  
@@ -66,7 +66,7 @@ yellow skin/eyes            (4)
 loss of appetite            (4)
 dark urine                  (4)
 
-Symptoms I will choose to have overlap and not overlap 
+%Symptoms I will choose to have overlap and not overlap
 cough 
 fatigue 
 headache 
