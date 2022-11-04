@@ -18,6 +18,8 @@ disease(influenza).
 disease(legionnaires_Disease).
 disease(hepatitis_A).
 
+listOfDisease([gastrointestinal_Illnesses, influenza, legionnaires_Disease, hepatitis_A]).
+
 %%%%%%%%%% symptomOf(Symptom, Disease)
 symptomOf(cough, influenza).
 symptomOf(cough, legionnaires_Disease).
@@ -63,5 +65,34 @@ compareUserDiseaseList(UserDiseaseList, DiseaseList, Count) :-
     countSameElements(UserDiseaseList, DiseaseList, Count),
     write(Disease), write(' '), write(Count), nl.
 
+%%%%%%%%%% bestMatch(UserDiseaseList, Output) where the Output is the disease that 
+%%% has the highest number of matches
+bestMatch(UserDiseaseList, BestMatch) :- 
+    symptomListDisease(DiseaseList, disease(Disease)),
+    countSameElements(UserDiseaseList, DiseaseList, UserCount),
+    
+    %is count is greater than or equal to count for gastrointestinal_Illnesses
+    symptomListDisease(GastroList, disease(gastrointestinal_Illnesses)),
+    countSameElements(UserDiseaseList, GastroList , GastroCount),
+    GastroCount =< UserCount, 
+    % write("passed gastrointestinal_Illnesses"), nl,
 
+    %is count is greater than or equal to count for influenza
+    symptomListDisease(InfluenzaList, disease(influenza)),
+    countSameElements(UserDiseaseList, InfluenzaList , InfluenzaCount),
+    InfluenzaCount =< UserCount, 
+    % write("passed influenza"), nl,
 
+    %is count is greater than or equal to count for legionnaires_Disease
+    symptomListDisease(LegionList, disease(gastrointestinal_Illnesses)),
+    countSameElements(UserDiseaseList, LegionList, LegionCount),
+    LegionCount =< UserCount, 
+    % write("passed legionnaires_Disease"), nl,
+
+    %is count is greater than or equal to count for hepatitis_A
+    symptomListDisease(HepList, disease(hepatitis_A)),
+    countSameElements(UserDiseaseList, HepList, HepCount),
+    HepCount =< UserCount, 
+    % write("passed hepatitis_A"), nl,
+
+    BestMatch = Disease.
