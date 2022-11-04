@@ -100,13 +100,15 @@ bestMatch(UserDiseaseList, BestMatch) :-
     PercentMatch >= 70, 
     BestMatch = Disease.
 
+isEmpty(List) :- List = []. 
+
 %----------------------------------------------------------
 % Main Program
 %----------------------------------------------------------
 
 %Start here
 main :-
-    getSymptoms(UserSymptomList),   % Get user symptoms
+    getSymptoms(UserSymptomList),  % Get user symptoms
     bestMatch(UserSymptomList,Best), % Find best match
     write('You likely have '), write(Best), nl. % Print result
 
@@ -122,5 +124,15 @@ getSymptoms(UserSymptoms) :-
     write('Enter a symptom list followed by a period.'), nl,
     write('like this [S1,S2,S3,...].'), nl,
     read(UserSymptoms),
+    not(isEmpty(UserSymptoms)),
     write('You entered: '), write(UserSymptoms), nl.
 
+getSymptoms(UserSymptoms) :- 
+    write("You came here for nothing?"), nl, 
+    write("C'mon tell me what's up"), nl,
+    read(UserSymptoms),
+    not(isEmpty(UserSymptoms)),
+    write('You entered: '), write(UserSymptoms), nl.
+
+getSymptoms(_UserSymptoms) :- 
+    write("Okay get out"), break.
