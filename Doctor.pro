@@ -46,7 +46,7 @@ symptomListDisease([vomiting, diarrhea], disease(gastrointestinal_Illnesses)).
 symptomListDisease([fatigue, headache, fever, aches, vomiting, yellow_Skin], disease(hepatitis_A)).
 symptomListDisease([cough, fever, aches, vomiting, sore_Throat], disease(influenza)).
 
-% Base Case
+% Base Case---------------------------------------------
 countSameElements([],[_|_],0).
 countSameElements([H1|T1],[H2|T2],SetCount) :-
     count(H1,[H2|T2],Count),
@@ -65,34 +65,53 @@ compareUserDiseaseList(UserDiseaseList, DiseaseList, Count) :-
     countSameElements(UserDiseaseList, DiseaseList, Count),
     write(Disease), write(' '), write(Count), nl.
 
-%%%%%%%%%% bestMatch(UserDiseaseList, Output) where the Output is the disease that 
+%%%%%%%%%% bestMatch(UserDiseaseList, Output) where the Output is the disease that
 %%% has the highest number of matches
-bestMatch(UserDiseaseList, BestMatch) :- 
+bestMatch(UserDiseaseList, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
-    
+
     %is count is greater than or equal to count for gastrointestinal_Illnesses
     symptomListDisease(GastroList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, GastroList , GastroCount),
-    GastroCount =< UserCount, 
+    GastroCount =< UserCount,
     % write("passed gastrointestinal_Illnesses"), nl,
 
     %is count is greater than or equal to count for influenza
     symptomListDisease(InfluenzaList, disease(influenza)),
     countSameElements(UserDiseaseList, InfluenzaList , InfluenzaCount),
-    InfluenzaCount =< UserCount, 
+    InfluenzaCount =< UserCount,
     % write("passed influenza"), nl,
 
     %is count is greater than or equal to count for legionnaires_Disease
     symptomListDisease(LegionList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, LegionList, LegionCount),
-    LegionCount =< UserCount, 
+    LegionCount =< UserCount,
     % write("passed legionnaires_Disease"), nl,
 
     %is count is greater than or equal to count for hepatitis_A
     symptomListDisease(HepList, disease(hepatitis_A)),
     countSameElements(UserDiseaseList, HepList, HepCount),
-    HepCount =< UserCount, 
+    HepCount =< UserCount,
     % write("passed hepatitis_A"), nl,
 
     BestMatch = Disease.
+
+%----------------------------------------------------------
+% Main Program
+%----------------------------------------------------------
+main :-
+    getSymptoms(UserSymptomList),   % Get user symptoms
+    bestMatch(UserSymptomList,Best), % Find best match
+    write('You likely have '), write(Best), nl. % Print result
+
+%----------------------------------------------------------
+% Ask user for symptoms -
+%----------------------------------------------------------
+getSymptoms(UserSymptoms) :-
+    write('What symptoms do you have?'), nl,
+    write('Enter a symptom list followed by a period.'), nl,
+    write('like this [S1,S2,S3,...].'), nl,
+    read(UserSymptoms),
+    write('You entered: '), write(UserSymptoms), nl.
+
