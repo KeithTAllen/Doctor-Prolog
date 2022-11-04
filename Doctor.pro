@@ -95,15 +95,24 @@ bestMatch(UserDiseaseList, BestMatch) :-
     HepCount =< UserCount,
     % write("passed hepatitis_A"), nl,
 
+    length(DiseaseList, L),
+    PercentMatch is ( ( 100 * UserCount ) / L ),
+    PercentMatch >= 70, 
     BestMatch = Disease.
 
 %----------------------------------------------------------
 % Main Program
 %----------------------------------------------------------
+
+%Start here
 main :-
     getSymptoms(UserSymptomList),   % Get user symptoms
     bestMatch(UserSymptomList,Best), % Find best match
     write('You likely have '), write(Best), nl. % Print result
+
+main :-
+    write("Hmmmm, I think I need more information."), nl,
+    write("How about I ask you some questions?").
 
 %----------------------------------------------------------
 % Ask user for symptoms -
