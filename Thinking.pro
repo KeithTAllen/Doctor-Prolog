@@ -22,7 +22,6 @@ fever
 runny nose
 aches and pains 
 sore throat 
-vomiting (children)
 
 %^^^^^^^^^^
 %Legionnaires Disease

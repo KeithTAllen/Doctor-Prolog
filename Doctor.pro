@@ -11,11 +11,20 @@ symptom(aches).
 symptom(vomiting).
 symptom(sore_Throat).
 symptom(yellow_Skin).
+symptom(bloating).     
+symptom(constipation).   
+symptom(dirrahea).
+symptom(heartburn). 
+symptom(abdominal_Pain). 
+symptom(congestion).
+symptom(short_Of_Breath). 
+symptom(stomach_Pain). 
+symptom(dark_Urine).  
 
 %%%%%%%%%% Diseases 
 %%% disease(Disease).
-disease(gastrointestinal_Illnesses).
 disease(influenza).
+disease(gastrointestinal_Illnesses).
 disease(legionnaires_Disease).
 disease(hepatitis_A).
 
@@ -23,30 +32,42 @@ listOfDisease([gastrointestinal_Illnesses, influenza, legionnaires_Disease, hepa
 
 %%%%%%%%%% symptom lists for diseases
 %%% symptomOf(Symptom, Disease).
-%symptomOf(cough, influenza).
-%symptomOf(cough, legionnaires_Disease).
-%symptomOf(fatigue, influenza).
-%symptomOf(fatigue, hepatitis_A).
-%symptomOf(headache, legionnaires_Disease).
-%symptomOf(headache, hepatitis_A).
-%symptomOf(fever, influenza).
-%symptomOf(fever, legionnaires_Disease).
-%symptomOf(fever, hepatitis_A).
-%symptomOf(aches, influenza).
-%symptomOf(aches, legionnaires_Disease).
-%symptomOf(aches, hepatitis_A). 
-%symptomOf(vomiting, influenza).
-%symptomOf(vomiting, hepatitis_A).
-%symptomOf(vomiting, gastrointestinal_Illnesses).
-%symptomOf(diarrhea, gastrointestinal_Illnesses).
-%symptomOf(sore_Throat, influenza).
-%symptomOf(yellow_Skin, hepatitis_A).
+%%%%%%%%%%
+symptomOf(cough, influenza).
+symptomOf(fatigue, influenza).
+symptomOf(fever, influenza).
+symptomOf(aches, influenza).
+symptomOf(vomiting, influenza).
+symptomOf(sore_Throat, influenza).
+symptomOf(congestion, influenza).
+
+symptomOf(vomiting, gastrointestinal_Illnesses).
+symptomOf(diarrhea, gastrointestinal_Illnesses).
+symptomOf(bloating, gastrointestinal_Illnesses).
+symptomOf(constipation, gastrointestinal_Illnesses).
+symptomOf(heartburn, gastrointestinal_Illnesses).
+symptomOf(abdominal_Pain, gastrointestinal_Illnesses).
+
+symptomOf(fatigue, hepatitis_A).
+symptomOf(headache, hepatitis_A).
+symptomOf(fever, hepatitis_A).
+symptomOf(aches, hepatitis_A). 
+symptomOf(vomiting, hepatitis_A).
+symptomOf(yellow_Skin, hepatitis_A).
+symptomOf(dark_Urine, hepatitis_A).
+symptomOf(stomach_Pain, hepatitis_A).
+
+symptomOf(cough, legionnaires_Disease).
+symptomOf(headache, legionnaires_Disease).
+symptomOf(fever, legionnaires_Disease).
+symptomOf(aches, legionnaires_Disease).
+symptomOf(short_Of_Breath, legionnaires_Disease).
 
 %%%%%%%%%% symptomListDisease([Symptom1, Symptom2, ... , SymptomN], disease(Disease)).
-symptomListDisease([cough, headache, fever, aches], disease(legionnaires_Disease)).
-symptomListDisease([vomiting, diarrhea], disease(gastrointestinal_Illnesses)).
-symptomListDisease([fatigue, headache, fever, aches, vomiting, yellow_Skin], disease(hepatitis_A)).
-symptomListDisease([cough, fever, aches, vomiting, sore_Throat], disease(influenza)).
+symptomListDisease([cough, fatigue, fever, aches, vomiting, sore_Throat, congestion], disease(influenza)).
+symptomListDisease([vomiting, diarrhea, bloating, constipation, heartburn, abdominal_Pain], disease(gastrointestinal_Illnesses)).
+symptomListDisease([cough, headache, fever, aches, short_Of_Breath], disease(legionnaires_Disease)).
+symptomListDisease([fatigue, headache, fever, aches, vomiting, yellow_Skin, dark_Urine, stomach_Pain], disease(hepatitis_A)).
 
 % Base Case---------------------------------------------
 countSameElements([],[_|_],0).
@@ -67,39 +88,98 @@ compareUserDiseaseList(UserDiseaseList, DiseaseList, Count) :-
     countSameElements(UserDiseaseList, DiseaseList, Count),
     write(Disease), write(' '), write(Count), nl.
 
-%%%%%%%%%% bestMatch(UserDiseaseList, Output) where the Output is the disease that
-%%% has the highest number of matches
+%%%%%%%%%% percentMatch(UserDiseaseList, Percent, Output) where the Output is the 
+%%% disease that has the highest percent of matches that passes a threshhold
 percentMatch(UserDiseaseList, Percent, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
+    length(DiseaseList, UserLength),
+    UserPercent is ( ( 100 * UserCount ) / UserLength ),
 
-    %is count is greater than or equal to count for gastrointestinal_Illnesses
+    %%%is count is greater than or equal to count for gastrointestinal_Illnesses
     symptomListDisease(GastroList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, GastroList , GastroCount),
-    GastroCount =< UserCount,
+    
+    length(GastroList, GastroLength),
+    GastroPercent is ( ( 100 * GastroCount ) / GastroLength ),
+    GastroPercent =< UserPercent,
     % write("passed gastrointestinal_Illnesses"), nl,
 
-    %is count is greater than or equal to count for influenza
+    %%%is count is greater than or equal to count for influenza
     symptomListDisease(InfluenzaList, disease(influenza)),
     countSameElements(UserDiseaseList, InfluenzaList , InfluenzaCount),
-    InfluenzaCount =< UserCount,
+
+    length(InfluenzaList, InfluenzaLength),
+    InfluenzaPercent is ( ( 100 * InfluenzaCount ) / InfluenzaLength ),
+    InfluenzaPercent =< UserPercent,    
     % write("passed influenza"), nl,
 
-    %is count is greater than or equal to count for legionnaires_Disease
+    %%%is count is greater than or equal to count for legionnaires_Disease
     symptomListDisease(LegionList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, LegionList, LegionCount),
-    LegionCount =< UserCount,
+    
+    length(LegionList, LegionLength),
+    LegionPercent is ( ( 100 * LegionCount ) / LegionLength ),
+    LegionPercent =< UserPercent,    
     % write("passed legionnaires_Disease"), nl,
 
-    %is count is greater than or equal to count for hepatitis_A
+    %%%is count is greater than or equal to count for hepatitis_A
     symptomListDisease(HepList, disease(hepatitis_A)),
     countSameElements(UserDiseaseList, HepList, HepCount),
-    HepCount =< UserCount,     
-    % write("passed hepatitis_A"), nl,
 
-    length(DiseaseList, L),
-    PercentMatch is ( ( 100 * UserCount ) / L ),
-    PercentMatch >= Percent, 
+    length(HepList, HepLength),
+    HepPercent is ( ( 100 * HepCount ) / HepLength ),
+    HepPercent =< UserPercent,     
+    % write("passed hepatitis_A"), nl,
+ 
+    Percent =< UserPercent,
+    % write(Percent),
+    BestMatch = Disease.
+
+%%%%%%%%%% bestMatch(UserDiseaseList, Output) where the Output is the disease that
+%%% has the best percent of matches
+percentMatch(UserDiseaseList, BestMatch) :-
+    symptomListDisease(DiseaseList, disease(Disease)),
+    countSameElements(UserDiseaseList, DiseaseList, UserCount),
+    length(DiseaseList, UserLength),
+    UserPercent is ( ( 100 * UserCount ) / UserLength ),
+
+    %%%is count is greater than or equal to count for gastrointestinal_Illnesses
+    symptomListDisease(GastroList, disease(gastrointestinal_Illnesses)),
+    countSameElements(UserDiseaseList, GastroList , GastroCount),
+    
+    length(GastroList, GastroLength),
+    GastroPercent is ( ( 100 * GastroCount ) / GastroLength ),
+    GastroPercent =< UserPercent,
+    % write("passed gastrointestinal_Illnesses"), nl,
+
+    %%%is count is greater than or equal to count for influenza
+    symptomListDisease(InfluenzaList, disease(influenza)),
+    countSameElements(UserDiseaseList, InfluenzaList , InfluenzaCount),
+
+    length(InfluenzaList, InfluenzaLength),
+    InfluenzaPercent is ( ( 100 * InfluenzaCount ) / InfluenzaLength ),
+    InfluenzaPercent =< UserPercent,    
+    % write("passed influenza"), nl,
+
+    %%%is count is greater than or equal to count for legionnaires_Disease
+    symptomListDisease(LegionList, disease(gastrointestinal_Illnesses)),
+    countSameElements(UserDiseaseList, LegionList, LegionCount),
+    
+    length(LegionList, LegionLength),
+    LegionPercent is ( ( 100 * LegionCount ) / LegionLength ),
+    LegionPercent =< UserPercent,    
+    % write("passed legionnaires_Disease"), nl,
+
+    %%%is count is greater than or equal to count for hepatitis_A
+    symptomListDisease(HepList, disease(hepatitis_A)),
+    countSameElements(UserDiseaseList, HepList, HepCount),
+
+    length(HepList, HepLength),
+    HepPercent is ( ( 100 * HepCount ) / HepLength ),
+    HepPercent =< UserPercent,     
+    % write("passed hepatitis_A"), nl,
+ 
     BestMatch = Disease.
 
 isEmpty(List) :- List = []. 
@@ -110,14 +190,16 @@ isEmpty(List) :- List = [].
 
 %Start here
 
-main :-
+main :- 
     getSymptoms(UserSymptomList), % Get user symptoms
-    bestMatch(UserSymptomList,Best), % Find best match
+    percentMatch(UserSymptomList, 70, Best), % Find best match
     write('You likely have '), write(Best), nl. % Print result
 
 main :-
-    write("Hmmmm, I think I need more information."), nl,
-    write("How about I ask you some questions?").
+    nl, write("Hmmmm, I think I need more information."), nl,
+    write("How about I ask you some questions."), nl,
+    write("Do you have any other symptoms you haven't mentioned?"),
+    write(UserSymptomList).
 
 
 %----------------------------------------------------------
@@ -128,10 +210,6 @@ getSymptoms(UserSymptoms) :-
     write('Enter a symptom list followed by a period.'), nl,
     write('like this [S1,S2,S3,...].'), nl,
     read(UserSymptoms),
-<<<<<<< Updated upstream
-    write('You entered: '), write(UserSymptoms), nl.   
-=======
-    not(isEmpty(UserSymptoms)),
     write('You entered: '), write(UserSymptoms), nl.
 
 /* leave this out and need to write some more mains if we want to handle 
