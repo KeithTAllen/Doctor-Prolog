@@ -138,7 +138,7 @@ percentMatch(UserDiseaseList, Percent, BestMatch) :-
 
 %%%%%%%%%% bestMatch(UserDiseaseList, Output) where the Output is the disease that
 %%% has the best percent of matches
-percentMatch(UserDiseaseList, BestMatch) :-
+bestMatch(UserDiseaseList, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
     length(DiseaseList, UserLength),
@@ -211,6 +211,7 @@ getSymptoms(UserSymptoms) :-
     write('like this [S1,S2,S3,...].'), nl,
     read(UserSymptoms),
     write('You entered: '), write(UserSymptoms), nl.
+
 
 /* leave this out and need to write some more mains if we want to handle 
         the empty list
