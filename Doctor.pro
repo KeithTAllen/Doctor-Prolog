@@ -37,35 +37,35 @@ listOfDisease([gastrointestinal_Illnesses, influenza, legionnaires_Disease, hepa
 %------------------------------------------------------------------------------------------------------
 % symptom lists for diseases
 % symptomOf(Symptom, Disease).
-symptomOf(cough, influenza).
-symptomOf(fatigue, influenza).
-symptomOf(fever, influenza).
-symptomOf(aches, influenza).
-symptomOf(vomiting, influenza).
-symptomOf(sore_Throat, influenza).
-symptomOf(congestion, influenza).
+symptomOf(cough, influenza, 1).
+symptomOf(fatigue, influenza, 1).
+symptomOf(fever, influenza, 1).
+symptomOf(aches, influenza, 1).
+symptomOf(vomiting, influenza, 1).
+symptomOf(sore_Throat, influenza, 1).
+symptomOf(congestion, influenza, 1).
 
-symptomOf(vomiting, gastrointestinal_Illnesses).
-symptomOf(diarrhea, gastrointestinal_Illnesses).
-symptomOf(bloating, gastrointestinal_Illnesses).
-symptomOf(constipation, gastrointestinal_Illnesses).
-symptomOf(heartburn, gastrointestinal_Illnesses).
-symptomOf(abdominal_Pain, gastrointestinal_Illnesses).
+symptomOf(vomiting, gastrointestinal_Illnesses, 1).
+symptomOf(diarrhea, gastrointestinal_Illnesses, 1).
+symptomOf(bloating, gastrointestinal_Illnesses, 1).
+symptomOf(constipation, gastrointestinal_Illnesses, 1).
+symptomOf(heartburn, gastrointestinal_Illnesses, 1).
+symptomOf(abdominal_Pain, gastrointestinal_Illnesses, 1).
 
-symptomOf(fatigue, hepatitis_A).
-symptomOf(headache, hepatitis_A).
-symptomOf(fever, hepatitis_A).
-symptomOf(aches, hepatitis_A). 
-symptomOf(vomiting, hepatitis_A).
-symptomOf(yellow_Skin, hepatitis_A).
-symptomOf(dark_Urine, hepatitis_A).
-symptomOf(stomach_Pain, hepatitis_A).
+symptomOf(fatigue, hepatitis_A, 1).
+symptomOf(headache, hepatitis_A, 1).
+symptomOf(fever, hepatitis_A, 1).
+symptomOf(aches, hepatitis_A, 1).
+symptomOf(vomiting, hepatitis_A, 1).
+symptomOf(yellow_Skin, hepatitis_A, 1).
+symptomOf(dark_Urine, hepatitis_A, 1).
+symptomOf(stomach_Pain, hepatitis_A, 1).
 
-symptomOf(cough, legionnaires_Disease).
-symptomOf(headache, legionnaires_Disease).
-symptomOf(fever, legionnaires_Disease).
-symptomOf(aches, legionnaires_Disease).
-symptomOf(short_Of_Breath, legionnaires_Disease).
+symptomOf(cough, legionnaires_Disease, 1).
+symptomOf(headache, legionnaires_Disease, 1).
+symptomOf(fever, legionnaires_Disease, 1).
+symptomOf(aches, legionnaires_Disease, 1).
+symptomOf(short_Of_Breath, legionnaires_Disease, 1).
 %------------------------------------------------------------------------------------------------------
 % symptomListDisease([Symptom1, Symptom2, ... , SymptomN], disease(Disease)).
 symptomListDisease([cough, fatigue, fever, aches, vomiting, sore_Throat, congestion], disease(influenza)).
@@ -89,6 +89,16 @@ count(H,[H|T],C) :-
     C is C1 + 1 , !.
 count(H,[_|T],C) :-
     count(H,T,C).
+
+%getListTotal(List, Disease, Count) adds total
+getListTotal([], disease(Disease), 0).
+getListTotal([H|T], disease(Disease), Count) :-
+    write('entered getListTotal'), nl,
+    symptomOf(H, disease(Disease), Weight),
+    SetCount is Count + Weight,
+    write('set count: '), write(SetCount), nl,
+    getListTotal(T, disease(Disease), SetCount).
+
 
 isEmpty(List) :- List = [].
 
@@ -212,13 +222,17 @@ main(UserSymptomList) :-
     nl, write("Hmmmm, I think I need more information."), nl,
     write("How about I ask you some questions."), nl,
     getMoreSymptoms(OtherSymptoms), %get rest of user symptoms
-    %not(isNo(OtherSymptoms)), %if user enters "No." is fails
     append(UserSymptomList, OtherSymptoms, NewUserSymptomList), %combine lists 
     percentMatch(NewUserSymptomList, 80, NewBest), %percentmatch with higher percent
     write('You likely have '), write(NewBest), nl. 
 
 main(_UserSymptomList) :- 
-    write('Made it to third main').
+    write('Made it to third main'),
+    % add all symptom weights
+    % add all symptom weights not found
+    % weight = found - notfound
+    getListTotal(UserSymptomList, disease(influenza), Count),
+    write(Count).
 
 %------------------------------------------------------------------------------------------------------
 % UI helper functions
@@ -238,7 +252,6 @@ getMoreSymptoms(UserSymptoms) :-
     read(UserSymptoms),
     not(isNo(UserSymptoms)),
     write('You entered: '), write(UserSymptoms), nl.
-
 
 /* leave this out and need to write some more mains if we want to handle 
         the empty list
