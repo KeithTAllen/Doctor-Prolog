@@ -90,24 +90,24 @@ count(H,[H|T],C) :-
 count(H,[_|T],C) :-
     count(H,T,C).
 
-%getListTotal(List, Disease, Count) adds total
-getListTotal([], _, 0).
-getListTotal([H|T], Disease, Count) :-
+%sumWeights(List, Disease, Count) sums the weight of the symptoms in List for a single Disease.
+sumWeights([], _, 0).
+sumWeights([H|T], Disease, Count) :-
     write('entered getListTotal'), nl,
-    getListTotal(T, Disease, NewCount),
+    sumWeights(T, Disease, NewCount),
     symptomOf(H, Disease, Weight),
     Count is NewCount + Weight, !,
     write('set count: '), write(Count), nl.
-% Find ListB - ListA
+
 % subtractList(ListA, ListB, ListC) will calculate ListB - ListA and unify the result to ListC.
 subtractList([], ListB, ListB).
 subtractList([H|T], ListB, ListC) :-
     subtractList(T, ListB, ListC1),
     delete(ListC1, H, ListC).
 
-
+% checks if a list is empty
 isEmpty(List) :- List = [].
-
+% looks for a "No."
 isNo(Input) :- Input = "No.".
 
 %------------------------------------------------------------------------------------------------------
@@ -232,11 +232,12 @@ main(UserSymptomList) :-
     percentMatch(NewUserSymptomList, 80, NewBest), %percentmatch with higher percent
     write('You likely have '), write(NewBest), nl. 
 
+/*
 main(UserSymptomList) :-
     write('Made it to third main'),
     disease(Disease) %set a disease
 
-    getListTotal(UserSymptomList, Disease , UserCount), % add all symptom weights
+    sumWeights(UserSymptomList, Disease , UserCount), % add all symptom weights
 
     % find the list of symptoms not found for a Disease
 
@@ -245,6 +246,7 @@ main(UserSymptomList) :-
     % SymptomListWeight = found - notfound
 
     % Then we can compare it against other possible diseases.
+*/
 
 
 %------------------------------------------------------------------------------------------------------
@@ -277,25 +279,7 @@ getSymptoms(UserSymptoms) :-
 
 getSymptoms(_UserSymptoms) :- 
     write("Okay get out"), break.
-*/
-
-% rewrite bestmatch arity 3 
-% flesh out the 4 diseases 
-% write psuedocode 
-
-%I think we should keep best match and write a similar percentMatch rule. 
-%   This percentMatch would pass and assign when it passes the threshhold,
-%   bestMatch would assign the best match regardless of percent
-
-/* Psuedo Code 
-
-add bestMatch and percentMatch in
-
-after we swap to second main 
-    ask for more symptoms
-    append those symptoms to previous list
-    redo a percentMatch at a higher percent, assign, and output (Type I interupts Type II)
-
+*//*
 main #3 (we have all the symptoms)
     maybe ask which symptoms are the worst? 
     need to do the weighted type II baysian 
