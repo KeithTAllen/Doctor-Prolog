@@ -1,8 +1,14 @@
-%%%%%%%%%%
-%%% Basic Rules 
-%%%%%%%%%%
-
-%%%%%%%%%% Symptoms
+%------------------------------------------------------------------------------------------------------
+% Dr.Prolog 1.0.1
+% CSC 366 - Computational Models of Cognitive Processes
+% Group Project:
+%      Christopher Stickle
+%      Keith Allen
+%      Timothy Germakovski
+%------------------------------------------------------------------------------------------------------
+% Facts
+%------------------------------------------------------------------------------------------------------
+% Symptoms
 symptom(cough).
 symptom(fatigue).
 symptom(headache).
@@ -19,20 +25,18 @@ symptom(abdominal_Pain).
 symptom(congestion).
 symptom(short_Of_Breath). 
 symptom(stomach_Pain). 
-symptom(dark_Urine).  
-
-%%%%%%%%%% Diseases 
-%%% disease(Disease).
+symptom(dark_Urine).
+%------------------------------------------------------------------------------------------------------
+% disease(Disease).
 disease(influenza).
 disease(gastrointestinal_Illnesses).
 disease(legionnaires_Disease).
 disease(hepatitis_A).
-
+%------------------------------------------------------------------------------------------------------
 listOfDisease([gastrointestinal_Illnesses, influenza, legionnaires_Disease, hepatitis_A]).
-
-%%%%%%%%%% symptom lists for diseases
-%%% symptomOf(Symptom, Disease).
-%%%%%%%%%%
+%------------------------------------------------------------------------------------------------------
+% symptom lists for diseases
+% symptomOf(Symptom, Disease).
 symptomOf(cough, influenza).
 symptomOf(fatigue, influenza).
 symptomOf(fever, influenza).
@@ -62,20 +66,23 @@ symptomOf(headache, legionnaires_Disease).
 symptomOf(fever, legionnaires_Disease).
 symptomOf(aches, legionnaires_Disease).
 symptomOf(short_Of_Breath, legionnaires_Disease).
-
-%%%%%%%%%% symptomListDisease([Symptom1, Symptom2, ... , SymptomN], disease(Disease)).
+%------------------------------------------------------------------------------------------------------
+% symptomListDisease([Symptom1, Symptom2, ... , SymptomN], disease(Disease)).
 symptomListDisease([cough, fatigue, fever, aches, vomiting, sore_Throat, congestion], disease(influenza)).
 symptomListDisease([vomiting, diarrhea, bloating, constipation, heartburn, abdominal_Pain], disease(gastrointestinal_Illnesses)).
 symptomListDisease([cough, headache, fever, aches, short_Of_Breath], disease(legionnaires_Disease)).
 symptomListDisease([fatigue, headache, fever, aches, vomiting, yellow_Skin, dark_Urine, stomach_Pain], disease(hepatitis_A)).
-
-% Base Case---------------------------------------------
+%------------------------------------------------------------------------------------------------------
+% Helper functions
+%------------------------------------------------------------------------------------------------------
+% countSameElements(List1, List2, Count). will count the number of elements in List1 that are also in List2.
+% Base Case
 countSameElements([],[_|_],0).
 countSameElements([H1|T1],[H2|T2],SetCount) :-
     count(H1,[H2|T2],Count),
     countSameElements(T1,[H2|T2],SetCount1),
     SetCount is Count + SetCount1.
-% Count-------------------------------------------------
+% Count(E,List,Count) will count the number of times E appears in List.
 count(_,[],0). % base case
 count(H,[H|T],C) :-
     count(H,T,C1),
@@ -83,13 +90,18 @@ count(H,[H|T],C) :-
 count(H,[_|T],C) :-
     count(H,T,C).
 
+isEmpty(List) :- List = [].
+
+isNo(Input) :- Input = "No.".
+
+%------------------------------------------------------------------------------------------------------
 compareUserDiseaseList(UserDiseaseList, DiseaseList, Count) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, Count),
     write(Disease), write(' '), write(Count), nl.
-
-%---------- percentMatch(UserDiseaseList, Percent, Output) where the Output is the 
-%--- disease that has the highest percent of matches that passes a threshhold
+%------------------------------------------------------------------------------------------------------
+% percentMatch(UserDiseaseList, Percent, Output). Unifys Output to the
+% disease that has the highest percent of matches that passes a threshhold
 percentMatch(UserDiseaseList, Percent, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
@@ -135,9 +147,9 @@ percentMatch(UserDiseaseList, Percent, BestMatch) :-
     %--- Check desired percent over the calculated UserPercent 
     Percent =< UserPercent,
     BestMatch = Disease.
-
-%---------- bestMatch(UserDiseaseList, Output) where the Output is the disease that
-%--- has the best percent of matches
+%------------------------------------------------------------------------------------------------------
+% bestMatch(UserDiseaseList, Output) Unifys Output to the disease that
+% has the highest number of matches of the user's symptoms to disease symptoms.
 bestMatch(UserDiseaseList, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
@@ -183,20 +195,11 @@ bestMatch(UserDiseaseList, BestMatch) :-
     %--- Assign disease we think it is 
     BestMatch = Disease.
 
-%----------
-%--- returns true of list is empty
-isEmpty(List) :- List = []. 
-
-%----------
-%--- returns true if it is "No."
-isNo(Input) :- Input = "No.".
 
 %----------------------------------------------------------
 % Main Program
-%----------------------------------------------------------
-
+%------------------------------------------------------------------------------------------------------
 %Start here
-
 main :- 
     getSymptoms(UserSymptomList), % Get user symptoms
     %percentMatch(UserSymptomList, 70, Best), % Find best match
@@ -217,9 +220,10 @@ main(UserSymptomList) :-
 main(_UserSymptomList) :- 
     write('Made it to third main').
 
-%----------------------------------------------------------
+%------------------------------------------------------------------------------------------------------
+% UI helper functions
+%------------------------------------------------------------------------------------------------------
 % Ask user for symptoms -
-%----------------------------------------------------------
 getSymptoms(UserSymptoms) :-
     write('What symptoms do you have?'), nl,
     write('Enter a symptom list followed by a period.'), nl,
@@ -234,6 +238,7 @@ getMoreSymptoms(UserSymptoms) :-
     read(UserSymptoms),
     not(isNo(UserSymptoms)),
     write('You entered: '), write(UserSymptoms), nl.
+
 
 /* leave this out and need to write some more mains if we want to handle 
         the empty list
