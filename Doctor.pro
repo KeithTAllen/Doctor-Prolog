@@ -192,14 +192,18 @@ isEmpty(List) :- List = [].
 
 main :- 
     getSymptoms(UserSymptomList), % Get user symptoms
-    percentMatch(UserSymptomList, 70, Best), % Find best match
-    write('You likely have '), write(Best), nl. % Print result
+    %percentMatch(UserSymptomList, 70, Best), % Find best match
+    (percentMatch(UserSymptomList, 70, Best) ->
+        ( write('You likely have '), write(Best), nl ) ;
+        main(UserSymptomList)
+    ).
 
-main :-
+main(UserSymptomList) :-
     nl, write("Hmmmm, I think I need more information."), nl,
     write("How about I ask you some questions."), nl,
     write("Do you have any other symptoms you haven't mentioned?"),
     write(UserSymptomList).
+
 
 
 %----------------------------------------------------------
