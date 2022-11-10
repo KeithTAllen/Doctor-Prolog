@@ -93,17 +93,31 @@ count(H,[_|T],C) :-
 %sumWeights(List, Disease, Count) sums the weight of the symptoms in List for a single Disease.
 sumWeights([], _, 0).
 sumWeights([H|T], Disease, Count) :-
-    write('entered getListTotal'), nl,
+    %write('entered getListTotal'), nl,
     sumWeights(T, Disease, NewCount),
     symptomOf(H, Disease, Weight),
-    Count is NewCount + Weight, !,
-    write('set count: '), write(Count), nl.
+    Count is NewCount + Weight, !.
+    %write('set count: '), write(Count), nl.
+sumWeights(_,_,Count):-
+    Count is 0.
 
 % subtractList(ListA, ListB, ListC) will calculate ListB - ListA and unify the result to ListC.
 subtractList([], ListB, ListB).
 subtractList([H|T], ListB, ListC) :-
     subtractList(T, ListB, ListC1),
     delete(ListC1, H, ListC).
+
+% total weight finds total weight
+totalWeight(PresentWeight, MissingWeight, TotalWeight) :-
+    TotalWeight is PresentWeight - MissingWeight.
+
+getTotalWeight(UserSymptomList, Disease, TotalWeight) :-
+    sumWeights(UserSymptomList, Disease , PresentWeight),
+    symptomListDisease(FullDiseaseList, disease(Disease)),
+    subtractList(UserSymptomList, FullDiseaseList, MissingSymptoms),
+    sumWeights(MissingSymptoms, Disease, MissingWeight),
+    totalWeight(PresentWeight, MissingWeight, UserSymptomsWeight),
+    TotalWeight is UserSymptomsWeight.
 
 % checks if a list is empty
 isEmpty(List) :- List = [].
@@ -227,26 +241,44 @@ main :-
 main(UserSymptomList) :-
     nl, write("Hmmmm, I think I need more information."), nl,
     write("How about I ask you some questions."), nl,
-    getMoreSymptoms(OtherSymptoms), %get rest of user symptoms
-    append(UserSymptomList, OtherSymptoms, NewUserSymptomList), %combine lists 
-    percentMatch(NewUserSymptomList, 80, NewBest), %percentmatch with higher percent
-    write('You likely have '), write(NewBest), nl. 
+    (getMoreSymptoms(OtherSymptoms)) ->  %get rest of user symptoms
+        append(UserSymptomList, OtherSymptoms, NewUserSymptomList), %combine lists
+        (percentMatch(NewUserSymptomList, 80, NewBest) ->
+            ( write('You likely have '), write(NewBest), nl ) ;
+            main2(NewUserSymptomList)
+        ) ;
+        main2(UserSymptomList).
 
-/*
-main(UserSymptomList) :-
-    write('Made it to third main'),
-    disease(Disease) %set a disease
+main2(UserSymptomList) :-
+    write('Made it to third main'), nl,
+    write('Symptom list: '), write(UserSymptomList), nl,
+    disease(Disease), %set a disease
+    nl, write('disease: '), write(Disease), nl,
+    getTotalWeight(UserSymptomList, Disease, UserTotalWeight),
+    write(UserTotalWeight), nl,
 
-    sumWeights(UserSymptomList, Disease , UserCount), % add all symptom weights
+    getTotalWeight(UserSymptomList, influenza, InfluenzaTotal),
+    InfluenzaTotal =< UserTotalWeight,
+    write('flu total: '), write(InfluenzaTotal), nl,
+    write('passed influenza'), nl,
 
-    % find the list of symptoms not found for a Disease
+    getTotalWeight(UserSymptomList, gastrointestinal_Illnesses, GastroTotal),
+    GastroTotal =< UserTotalWeight,
+    write('gastro total: '), write(GastroTotal), nl,
+    write('passed gastro'), nl,
 
-    % all all notfound Symptoms weight
+    getTotalWeight(UserSymptomList, legionnaires_Disease, LegionTotal),
+    LegionTotal =< UserTotalWeight,
+    write('legion total: '), write(LegionTotal), nl,
+    write('passed legion'), nl,
 
-    % SymptomListWeight = found - notfound
+    getTotalWeight(UserSymptomList, hepatitis_A, HepTotal),
+    HepTotal =< UserTotalWeight,
+    write('heptotal: '), write(HepTotal), nl,
+    write('passed hep'), nl, nl,
 
-    % Then we can compare it against other possible diseases.
-*/
+    write('You likely have '), write(Disease), nl,
+    write('Thanks for visiting the doc. Make sure you get a lollipop'), nl.
 
 
 %------------------------------------------------------------------------------------------------------
