@@ -88,15 +88,15 @@ compareUserDiseaseList(UserDiseaseList, DiseaseList, Count) :-
     countSameElements(UserDiseaseList, DiseaseList, Count),
     write(Disease), write(' '), write(Count), nl.
 
-%%%%%%%%%% percentMatch(UserDiseaseList, Percent, Output) where the Output is the 
-%%% disease that has the highest percent of matches that passes a threshhold
+%---------- percentMatch(UserDiseaseList, Percent, Output) where the Output is the 
+%--- disease that has the highest percent of matches that passes a threshhold
 percentMatch(UserDiseaseList, Percent, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
     length(DiseaseList, UserLength),
     UserPercent is ( ( 100 * UserCount ) / UserLength ),
 
-    %%%is count is greater than or equal to count for gastrointestinal_Illnesses
+    %--- is count is greater than or equal to count for gastrointestinal_Illnesses
     symptomListDisease(GastroList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, GastroList , GastroCount),
     
@@ -105,7 +105,7 @@ percentMatch(UserDiseaseList, Percent, BestMatch) :-
     GastroPercent =< UserPercent,
     % write("passed gastrointestinal_Illnesses"), nl,
 
-    %%%is count is greater than or equal to count for influenza
+    %--- is count is greater than or equal to count for influenza
     symptomListDisease(InfluenzaList, disease(influenza)),
     countSameElements(UserDiseaseList, InfluenzaList , InfluenzaCount),
 
@@ -114,7 +114,7 @@ percentMatch(UserDiseaseList, Percent, BestMatch) :-
     InfluenzaPercent =< UserPercent,    
     % write("passed influenza"), nl,
 
-    %%%is count is greater than or equal to count for legionnaires_Disease
+    %--- is count is greater than or equal to count for legionnaires_Disease
     symptomListDisease(LegionList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, LegionList, LegionCount),
     
@@ -123,7 +123,7 @@ percentMatch(UserDiseaseList, Percent, BestMatch) :-
     LegionPercent =< UserPercent,    
     % write("passed legionnaires_Disease"), nl,
 
-    %%%is count is greater than or equal to count for hepatitis_A
+    %--- is count is greater than or equal to count for hepatitis_A
     symptomListDisease(HepList, disease(hepatitis_A)),
     countSameElements(UserDiseaseList, HepList, HepCount),
 
@@ -132,19 +132,19 @@ percentMatch(UserDiseaseList, Percent, BestMatch) :-
     HepPercent =< UserPercent,     
     % write("passed hepatitis_A"), nl,
  
+    %--- Check desired percent over the calculated UserPercent 
     Percent =< UserPercent,
-    % write(Percent),
     BestMatch = Disease.
 
-%%%%%%%%%% bestMatch(UserDiseaseList, Output) where the Output is the disease that
-%%% has the best percent of matches
+%---------- bestMatch(UserDiseaseList, Output) where the Output is the disease that
+%--- has the best percent of matches
 bestMatch(UserDiseaseList, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
     length(DiseaseList, UserLength),
     UserPercent is ( ( 100 * UserCount ) / UserLength ),
 
-    %%%is count is greater than or equal to count for gastrointestinal_Illnesses
+    %--- is count is greater than or equal to count for gastrointestinal_Illnesses
     symptomListDisease(GastroList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, GastroList , GastroCount),
     
@@ -153,7 +153,7 @@ bestMatch(UserDiseaseList, BestMatch) :-
     GastroPercent =< UserPercent,
     % write("passed gastrointestinal_Illnesses"), nl,
 
-    %%%is count is greater than or equal to count for influenza
+    %--- is count is greater than or equal to count for influenza
     symptomListDisease(InfluenzaList, disease(influenza)),
     countSameElements(UserDiseaseList, InfluenzaList , InfluenzaCount),
 
@@ -162,7 +162,7 @@ bestMatch(UserDiseaseList, BestMatch) :-
     InfluenzaPercent =< UserPercent,    
     % write("passed influenza"), nl,
 
-    %%%is count is greater than or equal to count for legionnaires_Disease
+    %%%--- is count is greater than or equal to count for legionnaires_Disease
     symptomListDisease(LegionList, disease(gastrointestinal_Illnesses)),
     countSameElements(UserDiseaseList, LegionList, LegionCount),
     
@@ -171,7 +171,7 @@ bestMatch(UserDiseaseList, BestMatch) :-
     LegionPercent =< UserPercent,    
     % write("passed legionnaires_Disease"), nl,
 
-    %%%is count is greater than or equal to count for hepatitis_A
+    %--- is count is greater than or equal to count for hepatitis_A
     symptomListDisease(HepList, disease(hepatitis_A)),
     countSameElements(UserDiseaseList, HepList, HepCount),
 
@@ -180,9 +180,16 @@ bestMatch(UserDiseaseList, BestMatch) :-
     HepPercent =< UserPercent,     
     % write("passed hepatitis_A"), nl,
  
+    %--- Assign disease we think it is 
     BestMatch = Disease.
 
+%----------
+%--- returns true of list is empty
 isEmpty(List) :- List = []. 
+
+%----------
+%--- returns true if it is "No."
+isNo(Input) :- Input = "No.".
 
 %----------------------------------------------------------
 % Main Program
@@ -201,11 +208,14 @@ main :-
 main(UserSymptomList) :-
     nl, write("Hmmmm, I think I need more information."), nl,
     write("How about I ask you some questions."), nl,
-    getSymptoms(OtherSymptoms), %get rest of user symptoms
+    getMoreSymptoms(OtherSymptoms), %get rest of user symptoms
+    %not(isNo(OtherSymptoms)), %if user enters "No." is fails
     append(UserSymptomList, OtherSymptoms, NewUserSymptomList), %combine lists 
     percentMatch(NewUserSymptomList, 80, NewBest), %percentmatch with higher percent
     write('You likely have '), write(NewBest), nl. 
 
+main(_UserSymptomList) :- 
+    write('Made it to third main').
 
 %----------------------------------------------------------
 % Ask user for symptoms -
@@ -217,6 +227,13 @@ getSymptoms(UserSymptoms) :-
     read(UserSymptoms),
     write('You entered: '), write(UserSymptoms), nl.
 
+getMoreSymptoms(UserSymptoms) :-
+    write('What other symptoms do you have?'), nl,
+    write('Enter a symptom list followed by a period.'), nl,
+    write('like this [S1,S2,S3,...]. Or enter "No."'), nl,
+    read(UserSymptoms),
+    not(isNo(UserSymptoms)),
+    write('You entered: '), write(UserSymptoms), nl.
 
 /* leave this out and need to write some more mains if we want to handle 
         the empty list
