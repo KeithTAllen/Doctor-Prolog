@@ -91,13 +91,19 @@ count(H,[_|T],C) :-
     count(H,T,C).
 
 %getListTotal(List, Disease, Count) adds total
-getListTotal([], disease(Disease), 0).
-getListTotal([H|T], disease(Disease), Count) :-
+getListTotal([], _, 0).
+getListTotal([H|T], Disease, Count) :-
     write('entered getListTotal'), nl,
-    symptomOf(H, disease(Disease), Weight),
-    SetCount is Count + Weight,
-    write('set count: '), write(SetCount), nl,
-    getListTotal(T, disease(Disease), SetCount).
+    getListTotal(T, Disease, NewCount),
+    symptomOf(H, Disease, Weight),
+    Count is NewCount + Weight, !,
+    write('set count: '), write(Count), nl.
+% Find ListB - ListA
+% subtractList(ListA, ListB, ListC) will calculate ListB - ListA and unify the result to ListC.
+subtractList([], ListB, ListB).
+subtractList([H|T], ListB, ListC) :-
+    subtractList(T, ListB, ListC1),
+    delete(ListC1, H, ListC).
 
 
 isEmpty(List) :- List = [].
@@ -206,7 +212,7 @@ bestMatch(UserDiseaseList, BestMatch) :-
     BestMatch = Disease.
 
 
-%----------------------------------------------------------
+%------------------------------------------------------------------------------------------------------
 % Main Program
 %------------------------------------------------------------------------------------------------------
 %Start here
@@ -226,13 +232,13 @@ main(UserSymptomList) :-
     percentMatch(NewUserSymptomList, 80, NewBest), %percentmatch with higher percent
     write('You likely have '), write(NewBest), nl. 
 
-main(_UserSymptomList) :- 
+/*main(UserSymptomList) :-
     write('Made it to third main'),
     % add all symptom weights
     % add all symptom weights not found
     % weight = found - notfound
     getListTotal(UserSymptomList, disease(influenza), Count),
-    write(Count).
+    write(Count).*/
 
 %------------------------------------------------------------------------------------------------------
 % UI helper functions
