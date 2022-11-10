@@ -228,11 +228,18 @@ main(UserSymptomList) :-
 
 main(_UserSymptomList) :- 
     write('Made it to third main'),
-    % add all symptom weights
-    % add all symptom weights not found
-    % weight = found - notfound
-    getListTotal(UserSymptomList, disease(influenza), Count),
-    write(Count).
+    disease(Disease) %set a disease
+
+    getListTotal(UserSymptomList, Disease , UserCount), % add all symptom weights
+
+    % find the list of symptoms not found for a Disease
+
+    % all all notfound Symptoms weight
+
+    % SymptomListWeight = found - notfound
+
+    % Then we can compare it against other possible diseases.
+
 
 %------------------------------------------------------------------------------------------------------
 % UI helper functions
