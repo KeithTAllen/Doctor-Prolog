@@ -195,12 +195,13 @@ main :-
     percentMatch(UserSymptomList, 70, Best), % Find best match
     write('You likely have '), write(Best), nl. % Print result
 
-main :-
+main(UserSymptomList) :-
     nl, write("Hmmmm, I think I need more information."), nl,
     write("How about I ask you some questions."), nl,
-    write("Do you have any other symptoms you haven't mentioned?"),
-    write(UserSymptomList).
-
+    getSymptoms(OtherSymptoms), %get rest of user symptoms
+    append(UserSymptomList, OtherSymptoms, NewUserSymptomList), %combine lists 
+    percentMatch(NewUserSymptomList, 80, NewBest), %percentmatch with higher percent
+    write('You likely have '), write(NewBest), nl. 
 
 %----------------------------------------------------------
 % Ask user for symptoms -
