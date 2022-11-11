@@ -4,7 +4,7 @@
 % Group Project:
 %      Christopher Stickle
 %      Keith Allen
-%      Timothy Germakovski
+%      Timothy Germakovsky
 %------------------------------------------------------------------------------------------------------
 % Facts
 %------------------------------------------------------------------------------------------------------
@@ -37,8 +37,8 @@ listOfDisease([gastrointestinal_Illnesses, influenza, legionnaires_Disease, hepa
 %------------------------------------------------------------------------------------------------------
 % symptom lists for diseases
 % symptomOf(Symptom, Disease, Importance).
-% *importance is assigns from 1,2,3 and relates to percent of
-%   patients who have the disease experience a given symptom
+% *importance is assigned from 1,2,3 and relates to the percent of
+%   patients who have the disease and experience a given symptom
 symptomOf(cough, influenza, 3).
 symptomOf(fatigue, influenza, 2).
 symptomOf(fever, influenza, 2).
@@ -116,7 +116,7 @@ subtractList([H|T], ListB, ListC) :-
 getTotalWeight(UserSymptomList, Disease, TotalWeight) :-
     sumWeights(UserSymptomList, Disease , PresentWeight), % find summed weight of present symptoms
     symptomListDisease(FullDiseaseList, disease(Disease)), % grab full disease list for given disease(Disease)
-    subtractList(UserSymptomList, FullDiseaseList, MissingSymptoms), % find list of symptoms patient is not experiencing for given disease
+    subtractList(UserSymptomList, FullDiseaseList, MissingSymptoms), % find list of symptoms the patient is not experiencing for given disease
     sumWeights(MissingSymptoms, Disease, MissingWeight), % find summed weight of missing symptoms
     TotalWeight is PresentWeight - MissingWeight. % caclulate and assign total weight
 
@@ -132,7 +132,7 @@ compareUserDiseaseList(UserDiseaseList, DiseaseList, Count) :-
     write(Disease), write(' '), write(Count), nl.
 %------------------------------------------------------------------------------------------------------
 % percentMatch(UserDiseaseList, Percent, Output). Unifys Output to the
-% disease that has the highest percent of matches that passes a threshhold
+%   disease that has the highest percent of matches that passes a threshhold
 percentMatch(UserDiseaseList, Percent, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
@@ -180,7 +180,7 @@ percentMatch(UserDiseaseList, Percent, BestMatch) :-
     BestMatch = Disease.
 %------------------------------------------------------------------------------------------------------
 % bestMatch(UserDiseaseList, Output) Unifys Output to the disease that
-% has the highest number of matches of the user's symptoms to disease symptoms.
+%   has the highest number of matches of the user's symptoms to disease symptoms.
 bestMatch(UserDiseaseList, BestMatch) :-
     symptomListDisease(DiseaseList, disease(Disease)),
     countSameElements(UserDiseaseList, DiseaseList, UserCount),
@@ -228,8 +228,8 @@ bestMatch(UserDiseaseList, BestMatch) :-
 
 %------------------------------------------------------------------------------------------------------
 % bestBayesMatch(UserDiseaseList, Output) Unifys Output to the disease that
-% has the highest totalWeight, where total weight is the sum of the importance of
-% present symptums, minus the sum of the importance of symptoms not found.
+%   has the highest totalWeight, where total weight is the sum of the importance of
+%   present symptums, minus the sum of the importance of symptoms not present.
 bestBayesMatch(UserSymptomList, BestBayes) :-
     % write('Symptom list: '), write(UserSymptomList), nl,
     disease(Disease), %set a disease
