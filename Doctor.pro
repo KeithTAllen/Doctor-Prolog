@@ -36,42 +36,47 @@ disease(hepatitis_A).
 listOfDisease([gastrointestinal_Illnesses, influenza, legionnaires_Disease, hepatitis_A]).
 %------------------------------------------------------------------------------------------------------
 % symptom lists for diseases
-% symptomOf(Symptom, Disease).
-symptomOf(cough, influenza, 1).
-symptomOf(fatigue, influenza, 1).
-symptomOf(fever, influenza, 1).
-symptomOf(aches, influenza, 1).
+% symptomOf(Symptom, Disease, Importance).
+% *importance is assigns from 1,2,3 and relates to percent of
+%   patients who have the disease experience a given symptom
+symptomOf(cough, influenza, 3).
+symptomOf(fatigue, influenza, 2).
+symptomOf(fever, influenza, 2).
+symptomOf(aches, influenza, 2).
 symptomOf(vomiting, influenza, 1).
-symptomOf(sore_Throat, influenza, 1).
-symptomOf(congestion, influenza, 1).
+symptomOf(sore_Throat, influenza, 3).
+symptomOf(congestion, influenza, 3).
 
 symptomOf(vomiting, gastrointestinal_Illnesses, 1).
-symptomOf(diarrhea, gastrointestinal_Illnesses, 1).
-symptomOf(bloating, gastrointestinal_Illnesses, 1).
-symptomOf(constipation, gastrointestinal_Illnesses, 1).
+symptomOf(diarrhea, gastrointestinal_Illnesses, 3).
+symptomOf(bloating, gastrointestinal_Illnesses, 2).
+symptomOf(constipation, gastrointestinal_Illnesses, 3).
 symptomOf(heartburn, gastrointestinal_Illnesses, 1).
-symptomOf(abdominal_Pain, gastrointestinal_Illnesses, 1).
+symptomOf(abdominal_Pain, gastrointestinal_Illnesses, 3).
 
-symptomOf(fatigue, hepatitis_A, 1).
-symptomOf(headache, hepatitis_A, 1).
-symptomOf(fever, hepatitis_A, 1).
-symptomOf(aches, hepatitis_A, 1).
-symptomOf(vomiting, hepatitis_A, 1).
+symptomOf(fatigue, hepatitis_A, 2).
+symptomOf(headache, hepatitis_A, 2).
+symptomOf(fever, hepatitis_A, 2).
+symptomOf(aches, hepatitis_A, 2).
+symptomOf(vomiting, hepatitis_A, 2).
 symptomOf(yellow_Skin, hepatitis_A, 1).
-symptomOf(dark_Urine, hepatitis_A, 1).
-symptomOf(stomach_Pain, hepatitis_A, 1).
+symptomOf(dark_Urine, hepatitis_A, 2).
+symptomOf(stomach_Pain, hepatitis_A, 2).
 
-symptomOf(cough, legionnaires_Disease, 1).
+symptomOf(cough, legionnaires_Disease, 2).
 symptomOf(headache, legionnaires_Disease, 1).
-symptomOf(fever, legionnaires_Disease, 1).
+symptomOf(fever, legionnaires_Disease, 3).
 symptomOf(aches, legionnaires_Disease, 1).
-symptomOf(short_Of_Breath, legionnaires_Disease, 1).
+symptomOf(short_Of_Breath, legionnaires_Disease, 2).
+symptomOf(diarrhea, legionnaires_Disease, 2).
+symptomOf(nausea, legionnaires_Disease, 2).
+
 %------------------------------------------------------------------------------------------------------
 % symptomListDisease([Symptom1, Symptom2, ... , SymptomN], disease(Disease)).
 symptomListDisease([cough, fatigue, fever, aches, vomiting, sore_Throat, congestion], disease(influenza)).
 symptomListDisease([vomiting, diarrhea, bloating, constipation, heartburn, abdominal_Pain], disease(gastrointestinal_Illnesses)).
-symptomListDisease([cough, headache, fever, aches, short_Of_Breath], disease(legionnaires_Disease)).
 symptomListDisease([fatigue, headache, fever, aches, vomiting, yellow_Skin, dark_Urine, stomach_Pain], disease(hepatitis_A)).
+symptomListDisease([cough, headache, fever, aches, short_Of_Breath, nausea, diarrhea], disease(legionnaires_Disease)).
 %------------------------------------------------------------------------------------------------------
 % Helper functions
 %------------------------------------------------------------------------------------------------------
@@ -107,17 +112,13 @@ subtractList([H|T], ListB, ListC) :-
     subtractList(T, ListB, ListC1),
     delete(ListC1, H, ListC).
 
-% total weight finds total weight
-totalWeight(PresentWeight, MissingWeight, TotalWeight) :-
-    TotalWeight is PresentWeight - MissingWeight.
-
+% assigns total weight from UserSymptomList, Disease,
 getTotalWeight(UserSymptomList, Disease, TotalWeight) :-
-    sumWeights(UserSymptomList, Disease , PresentWeight),
-    symptomListDisease(FullDiseaseList, disease(Disease)),
-    subtractList(UserSymptomList, FullDiseaseList, MissingSymptoms),
-    sumWeights(MissingSymptoms, Disease, MissingWeight),
-    totalWeight(PresentWeight, MissingWeight, UserSymptomsWeight),
-    TotalWeight is UserSymptomsWeight.
+    sumWeights(UserSymptomList, Disease , PresentWeight), % find summed weight of present symptoms
+    symptomListDisease(FullDiseaseList, disease(Disease)), % grab full disease list for given disease(Disease)
+    subtractList(UserSymptomList, FullDiseaseList, MissingSymptoms), % find list of symptoms patient is not experiencing for given disease
+    sumWeights(MissingSymptoms, Disease, MissingWeight), % find summed weight of missing symptoms
+    TotalWeight is PresentWeight - MissingWeight. % caclulate and assign total weight
 
 % checks if a list is empty
 isEmpty(List) :- List = [].
@@ -225,6 +226,39 @@ bestMatch(UserDiseaseList, BestMatch) :-
     %--- Assign disease we think it is 
     BestMatch = Disease.
 
+%------------------------------------------------------------------------------------------------------
+% bestBayesMatch(UserDiseaseList, Output) Unifys Output to the disease that
+% has the highest totalWeight, where total weight is the sum of the importance of
+% present symptums, minus the sum of the importance of symptoms not found.
+bestBayesMatch(UserSymptomList, BestBayes) :-
+    % write('Symptom list: '), write(UserSymptomList), nl,
+    disease(Disease), %set a disease
+    % nl, write('disease: '), write(Disease), nl,
+    getTotalWeight(UserSymptomList, Disease, UserTotalWeight), % find weight of UserSymptomList for given Disease
+    % write(UserTotalWeight), nl,
+
+    getTotalWeight(UserSymptomList, influenza, InfluenzaTotal), % find total for influenza
+    InfluenzaTotal =< UserTotalWeight, % test if Users is greater than influenza
+    % write('flu total: '), write(InfluenzaTotal), nl,
+    % write('passed influenza'), nl,
+
+    getTotalWeight(UserSymptomList, gastrointestinal_Illnesses, GastroTotal), % find total for gastrointestinal_Illnesses
+    GastroTotal =< UserTotalWeight, % test if Users is greater than gastrointestinal_Illnesses
+    % write('gastro total: '), write(GastroTotal), nl,
+    % write('passed gastro'), nl,
+
+    getTotalWeight(UserSymptomList, legionnaires_Disease, LegionTotal), % find total for legionnaries_Disease
+    LegionTotal =< UserTotalWeight, % test if Users is greater than legionnaries_Disease
+    % write('legion total: '), write(LegionTotal), nl,
+    % write('passed legion'), nl,
+
+    getTotalWeight(UserSymptomList, hepatitis_A, HepTotal), % find total for hepatitis_A
+    HepTotal =< UserTotalWeight, % test is Users is greater than hepatitis_A
+    % write('heptotal: '), write(HepTotal), nl,
+    % write('passed hep'), nl, nl,
+
+    BestBayes = Disease. % Disease is assigned iff it passes all tests and thus has the greatest total
+
 
 %------------------------------------------------------------------------------------------------------
 % Main Program
@@ -241,43 +275,19 @@ main :-
 main(UserSymptomList) :-
     nl, write("Hmmmm, I think I need more information."), nl,
     write("How about I ask you some questions."), nl,
-    (getMoreSymptoms(OtherSymptoms)) ->  %get rest of user symptoms
+    (getMoreSymptoms(OtherSymptoms)) ->  %get rest of symptoms, when user inputs 'No.' getMoreSymptoms fails go to main3
         append(UserSymptomList, OtherSymptoms, NewUserSymptomList), %combine lists
-        (percentMatch(NewUserSymptomList, 80, NewBest) ->
+        (percentMatch(NewUserSymptomList, 80, NewBest) -> % if the new list can pass a greater % test diagnose
             ( write('You likely have '), write(NewBest), nl ) ;
-            main2(NewUserSymptomList)
+            main3(NewUserSymptomList) % else go to main3
         ) ;
-        main2(UserSymptomList).
+        main3(UserSymptomList).
 
-main2(UserSymptomList) :-
-    write('Made it to third main'), nl,
-    write('Symptom list: '), write(UserSymptomList), nl,
-    disease(Disease), %set a disease
-    nl, write('disease: '), write(Disease), nl,
-    getTotalWeight(UserSymptomList, Disease, UserTotalWeight),
-    write(UserTotalWeight), nl,
-
-    getTotalWeight(UserSymptomList, influenza, InfluenzaTotal),
-    InfluenzaTotal =< UserTotalWeight,
-    write('flu total: '), write(InfluenzaTotal), nl,
-    write('passed influenza'), nl,
-
-    getTotalWeight(UserSymptomList, gastrointestinal_Illnesses, GastroTotal),
-    GastroTotal =< UserTotalWeight,
-    write('gastro total: '), write(GastroTotal), nl,
-    write('passed gastro'), nl,
-
-    getTotalWeight(UserSymptomList, legionnaires_Disease, LegionTotal),
-    LegionTotal =< UserTotalWeight,
-    write('legion total: '), write(LegionTotal), nl,
-    write('passed legion'), nl,
-
-    getTotalWeight(UserSymptomList, hepatitis_A, HepTotal),
-    HepTotal =< UserTotalWeight,
-    write('heptotal: '), write(HepTotal), nl,
-    write('passed hep'), nl, nl,
-
-    write('You likely have '), write(Disease), nl,
+main3(UserSymptomList) :-
+    % write('Made it to third main'), nl,
+    bestMatch(UserSymptomList, BestMatch),
+    bestBayesMatch(UserSymptomList, BestBayes), %find the bestBayesMatch with combined UserSymptomList
+    write('You likely have '), write(BestBayes), write(', or you have '), write(BestMatch), nl, %output findings
     write('Thanks for visiting the doc. Make sure you get a lollipop'), nl.
 
 
@@ -311,16 +321,4 @@ getSymptoms(UserSymptoms) :-
 
 getSymptoms(_UserSymptoms) :- 
     write("Okay get out"), break.
-*//*
-main #3 (we have all the symptoms)
-    maybe ask which symptoms are the worst? 
-    need to do the weighted type II baysian 
-    A disease is assigned iff it has the highest number of "important" symptoms
-        and/or (probably and)
-    the lowest number of "unimportant" symptoms.
-
-    Symptoms can be weighted either 1,2,3 or -1,0,1 I am not sure, 
-        this way we are comparing these values against each other and not agaisnt
-        some arbitrary theshhold. I think the more we can compare things against
-        other possibilities the better.  
 */
